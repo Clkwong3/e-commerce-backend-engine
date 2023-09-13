@@ -53,13 +53,12 @@ Product.init(
         key: "id", // Referromg tp the 'id' column in the 'category' model
       },
       validate: {
-        isExist(value) {
+        async isExist(value) {
           // Check if the 'category_id' exists in the Category model
-          return Category.findByPk(value).then((category) => {
-            if (!category) {
-              throw new Error("Category does not exist.");
-            }
-          });
+          const category = await Category.findByPk(value);
+          if (!category) {
+            throw new Error("Category does not exist.");
+          }
         },
       },
     },
