@@ -18,6 +18,10 @@ Category.init(
     category_name: {
       type: DataTypes.STRING, // 'category_name' column stores string values
       allowNull: false, // 'category_name' cannot be null, must always have a value
+      unique: true, // Checks if the 'category_name' is unique, prevent duplicates
+      validate: {
+        len: [1, 50], // Limits the length of the 'category_name' to 1 - 50 characters
+      },
     },
   },
   {
