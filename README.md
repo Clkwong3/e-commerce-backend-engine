@@ -4,4 +4,4 @@ Construct the essential infrastructure for a robust and functional e-commerce we
 
 ## Starter Code:
 
-Provided in the module Challenge's folder
+Provided from the module Challenge's folder
