@@ -50,12 +50,12 @@ Product.init(
     category_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: "category", // Referring to the 'category' model
-        key: "id", // Referring to the 'id' column in the 'category' model
+        model: "category", // Referring to the 'Category' model
+        key: "id", // Referring to the 'id' column in the 'Category' model
       },
       validate: {
         async isExist(value) {
-          // Check if the 'category_id' exists in the Category model
+          // Check if the 'category_id' exists in the 'Category' model
           const category = await Category.findByPk(value);
           // If nothing is found, throw an error
           if (!category) {
