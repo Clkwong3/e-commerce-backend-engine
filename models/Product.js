@@ -22,6 +22,7 @@ Product.init(
     product_name: {
       type: DataTypes.STRING,
       allowNull: false, // Must have a name
+      unique: true, // Checks if the 'product_name' is unique, prevent duplicates
       validate: {
         len: [1, 200], // Limits the length of the 'product_name' to 1 - 200 characters
       },
@@ -50,12 +51,13 @@ Product.init(
       type: DataTypes.INTEGER,
       references: {
         model: "category", // Referring to the 'category' model
-        key: "id", // Referromg tp the 'id' column in the 'category' model
+        key: "id", // Referring to the 'id' column in the 'category' model
       },
       validate: {
         async isExist(value) {
           // Check if the 'category_id' exists in the Category model
           const category = await Category.findByPk(value);
+          // If nothing is found, throw an error
           if (!category) {
             throw new Error("Category does not exist.");
           }
