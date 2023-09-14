@@ -42,13 +42,28 @@ router.post("/", async (req, res) => {
     // Sends the newly created category data
     res.status(200).json(categoryData);
   } catch (err) {
-    // Sends error details
-    res.status(400).json(err);
+    // Send error details if an error occurred
+    res.status(500).json(err);
   }
 });
 
-router.put("/:id", (req, res) => {
+// Listen for PUT request to the endpoint
+router.put("/:id", async (req, res) => {
   // update a category by its `id` value
+  try {
+    const categoryData = await Category.findByPk(req.params.id);
+
+    // If the category doesn't exist, return a 404 error
+    if (!categoryData) {
+      return res.status(404).json({ message: "Category not found." });
+    }
+    // Update the category's properties based on the request body
+    categoryData.category_name = req.body.category_name;
+
+    res.status(200).json(categoryData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 router.delete("/:id", (req, res) => {
