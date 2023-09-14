@@ -95,59 +95,57 @@ router.post("/", async (req, res) => {
 // Listen for PUT requests to update a product
 router.put("/:id", async (req, res) => {
   try {
-    // Update product data
+    // Update product data using Sequelize
     const [rowsUpdated, [updatedProduct]] = await Product.update(req.body, {
       where: {
         id: req.params.id,
       },
-      returning: true, // Return the updated product
+      returning: true, // This option returns the updated record(s)
     });
-    // '[rowsUpdated, [updatedProduct]]' Code Break Down
-    // 'rowsUpdated' - Shows how many records in the 'Product' table were affected by the update in the database
-    // '[updatedProduct]' - Array containing the updated product data
-    // 'returning: true' - Sequelize method to return the updated records as an array
 
-    if (req.body.tagIds && req.body.tagIds.length) {
-      // Get all existing 'ProductTag' records for a specific product
-      const productTags = await ProductTag.findAll({
-        where: { product_id: req.params.id },
+    // Check the outcome of the product update operation
+    if (rowsUpdated > 0) {
+      // Rows were updated successfully
+      res.status(200).json({
+        message: "Product updated successfully.",
+        updatedProduct: updatedProduct, // Include the updated product data in the response
       });
-
-      // Create a list of 'productTagsIds' that contains the 'tag_id' values from the 'productTags' array
-      const productTagIds = productTags.map(({ tag_id }) => tag_id);
-
-      // Create a list of 'newProductTags'
-      // Filter the 'tagIds' to find new tags that are not in 'productTagIds'
-      const newProductTags = req.body.tagIds
-        .filter((tag_id) => !productTagIds.includes(tag_id))
-        .map((tag_id) => ({
-          product_id: req.params.id,
-          tag_id,
-        }));
-
-      // Create a list of 'productTagsToRemove'
-      // Filter 'productTags' to find tags to remove
-      const productTagsToRemove = productTags
-        .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
-        .map(({ id }) => id);
-
-      // Use Promise.all to run 2 operations in parallel for efficiency, one to remove and one to add
-      // Remove the product tags found in 'productTagsToRemove'
-      await ProductTag.destroy({ where: { id: productTagsToRemove } });
-
-      // Create new product tags from 'newProductTags' that don't exist yet
-      await ProductTag.bulkCreate(newProductTags);
+    } else {
+      // No rows were updated (product with the specified ID not found)
+      res.status(404).json({ message: "Product not found." });
     }
-
-    // Send a response indicating success
-    res.json(updatedProduct);
   } catch (err) {
-    res.status(400).json(err);
+    console.error(err);
+    res.status(400).json({ message: "Failed to update product.", error: err });
   }
 });
 
-router.delete("/:id", (req, res) => {
-  // delete one product by its `id` value
+// Listen for DELETE request to the endpoint by its `id` value
+router.delete("/:id", async (req, res) => {
+  // Delete one product by its `id` value
+  try {
+    // Use Sequelize's '.destroy()' method to delete the product
+    const deletedProduct = await Product.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    // Check if a product with the given id was found and deleted
+    if (!deletedProduct) {
+      return res
+        .status(404)
+        .json({ message: "No product found with this id." });
+    }
+
+    // Respond with a success message and the deleted product data
+    res
+      .status(200)
+      .json({ message: "product deleted successfully.", data: deletedProduct });
+  } catch (err) {
+    // Send error details if an error occurred
+    res.status(500).json({ message: "Failed to delete product.", error: err });
+  }
 });
 
 module.exports = router;
