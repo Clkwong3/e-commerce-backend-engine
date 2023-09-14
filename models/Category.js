@@ -4,6 +4,7 @@ const sequelize = require("../config/connection.js");
 
 // Define Category model by extending Sequelize Model
 class Category extends Model {}
+
 // Initialize Category model
 Category.init(
   {
@@ -14,6 +15,7 @@ Category.init(
       primaryKey: true, // Uniquely identifies each row
       autoIncrement: true, // 'id' should auto-increment with each new row added
     },
+
     // The name of the category, cannot be empty
     category_name: {
       type: DataTypes.STRING, // 'category_name' column stores string values
@@ -24,13 +26,15 @@ Category.init(
       },
     },
   },
+  // Sequelize configuration options
   {
     sequelize,
-    timestamps: false,
-    freezeTableName: true,
-    underscored: true,
-    modelName: "category",
+    timestamps: false, // Turn off the timestamp columns
+    freezeTableName: true, // Prevent the table name from changing
+    underscored: true, // Use underscores for column names
+    modelName: "category", // Model name in the database
   }
 );
-// Export the Category model
+
+// Export the 'Category' model
 module.exports = Category;

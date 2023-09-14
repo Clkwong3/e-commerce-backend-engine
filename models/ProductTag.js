@@ -6,8 +6,10 @@ const sequelize = require("../config/connection");
 const Product = require("./Product");
 const Tag = require("./Tag");
 
+// Initialize 'ProductTag' model (table) by extending off Sequelize's Model class
 class ProductTag extends Model {}
 
+// Set up fields and rules for 'Tag' model
 ProductTag.init(
   {
     // Each product is has a unique identifier and is automatically incremented
@@ -17,6 +19,7 @@ ProductTag.init(
       primaryKey: true, // Main identifier
       autoIncrement: true, // Auto-increment for new entries
     },
+
     // Referring to a product in the 'Product' model
     product_id: {
       type: DataTypes.INTEGER,
@@ -35,6 +38,7 @@ ProductTag.init(
         },
       },
     },
+
     // Referring to a tag in the 'Tag' model
     tag_id: {
       type: DataTypes.INTEGER,
@@ -54,6 +58,7 @@ ProductTag.init(
       },
     },
   },
+  // Sequelize configuration options
   {
     sequelize,
     timestamps: false, // Exclude timestamp columns
@@ -63,4 +68,5 @@ ProductTag.init(
   }
 );
 
+// Export the 'ProductTag' model
 module.exports = ProductTag;
