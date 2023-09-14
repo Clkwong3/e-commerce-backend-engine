@@ -2,8 +2,6 @@
 const router = require("express").Router();
 const { Category, Product } = require("../../models");
 
-// The `/api/categories` endpoint
-
 // Listens for GET requests to retrieve all categories
 router.get("/", async (req, res) => {
   try {
@@ -66,8 +64,30 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
+// Listen for DELETE request to the endpoint by its `id` value
+router.delete("/:id", async (req, res) => {
   // delete a category by its `id` value
+  try {
+    // Use Sequelize's '.destroy()' method to delete the category
+    const categoryData = await Category.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    // Check if a category with the given id was found and deleted
+    if (!categoryData) {
+      return res
+        .status(404)
+        .json({ message: "No category found with this id." });
+    }
+
+    // Respond with a success message and the deleted category data
+    res.status(200).json(categoryData);
+  } catch (err) {
+    // Send error details if an error occurred
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;
