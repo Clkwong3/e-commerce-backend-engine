@@ -50,12 +50,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     // Create a new category using 'Category.create()' method
-    const categoryData = await Category.create(req.body);
+    const category = await Category.create(req.body);
 
     // Send the newly created category data
     res
       .status(201)
-      .json({ message: "Category created successfully.", data: categoryData });
+      .json({ message: "Category created successfully.", data: category });
   } catch (err) {
     // Send error details if an error occurred
     res.status(500).json({ message: "Failed to create category.", error: err });

@@ -48,36 +48,48 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// create new product
-router.post("/", (req, res) => {
-  /* req.body should look like this...
-    {
-      product_name: "Basketball",
-      price: 200.00,
-      stock: 3,
-      tagIds: [1, 2, 3, 4]
-    }
-  */
-  Product.create(req.body)
-    .then((product) => {
-      // if there's product tags, we need to create pairings to bulk create in the ProductTag model
-      if (req.body.tagIds.length) {
-        const productTagIdArr = req.body.tagIds.map((tag_id) => {
-          return {
-            product_id: product.id,
-            tag_id,
-          };
-        });
-        return ProductTag.bulkCreate(productTagIdArr);
-      }
-      // if no product tags, just respond
+// Listen for POST requests to create a new product
+router.post("/", async (req, res) => {
+  try {
+    // Create a new product using 'Product.create()' method
+    const product = await Product.create(req.body);
+
+    // If there are product tags, create pairings to bulk create in the 'ProductTag' model
+    if (req.body.tagIds.length) {
+      const productTagIdArr = req.body.tagIds.map((tag_id) => ({
+        product_id: product.id,
+        tag_id,
+      }));
+      // 'const productTagIdArr ' Code Break Down:
+      // 'productTagIdArr' - A pairing between 1 product and 1 tag is represented in each object in this array
+      // 'req.body.tagIds' - Each 'tagIds' from the 'req.body' object represents a tag associated with a product
+      // '.map((tag_id)=> {})' - Use the '.map()' method to go through each 'tag_id' in the array and transforms it into an object with properties 'product_id' and 'tag_id'.
+      // Each objects has 2 properties:
+      //    'product_id' - ID of the newly created product
+      //    'tag_id' - ID of the tag associated with with product
+      // 'product_id: product.id' - Set the 'product_id' of the object to the 'id' of the newly created product
+      // 'tag_id' - Set the 'tag_id' of the object to the current 'tag_id' being repeated
+
+      // Create the product-tag associations
+      await ProductTag.bulkCreate(productTagIdArr);
+      // 'ProductTag.bulkCreate' Code Break Down:
+      // 'ProductTag' - Represent 'ProductTag' table in database
+      // '.bulkCreate' - Sequelize method that inserts multiple records(rows) into the database all at once
+      // 'productTagIdArr' - Array of objects that reprsents a pairing between a product and tag with 'product_id' and 'tag_id' properties
+
+      // Send the newly created 'productTagIds'
+      res.status(200).json({
+        message: "Product Tag created successfully.",
+        data: productTagIdArr,
+      });
+    } else {
+      // If no product tags, respond with the created product
       res.status(200).json(product);
-    })
-    .then((productTagIds) => res.status(200).json(productTagIds))
-    .catch((err) => {
-      console.log(err);
-      res.status(400).json(err);
-    });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Failed to create product.", error: err });
+  }
 });
 
 // update product
