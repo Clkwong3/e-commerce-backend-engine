@@ -4,7 +4,7 @@ const { Category, Product } = require("../../models");
 
 // The `/api/categories` endpoint
 
-// Listens for GET requests to retrieve all categories
+// Listen for GET requests to retrieve all categories
 router.get("/", async (req, res) => {
   try {
     // Use 'Category.findAll()' method to find all categories
@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Listens for GET requests to retrieve a single category by its `id` value
+// Listen for GET requests to retrieve a single category by its `id` value
 router.get("/:id", async (req, res) => {
   try {
     // Use 'Category.findByPk()' method to find a category by its primary key (id)
@@ -50,12 +50,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     // Create a new category using 'Category.create()' method
-    const category = await Category.create(req.body);
+    const newCategory = await Category.create(req.body);
 
     // Send the newly created category data
     res
       .status(201)
-      .json({ message: "Category created successfully.", data: category });
+      .json({ message: "Category created successfully.", data: newCategory });
   } catch (err) {
     // Send error details if an error occurred
     res.status(500).json({ message: "Failed to create category.", error: err });
@@ -67,23 +67,24 @@ router.put("/:id", async (req, res) => {
   // Update a category by its `id` value
   try {
     // Find the category by its primary key (id)
-    const categoryData = await Category.findByPk(req.params.id);
+    const updatedCategory = await Category.findByPk(req.params.id);
 
     // If the category doesn't exist, return a 404 error
-    if (!categoryData) {
+    if (!updatedCategory) {
       return res.status(404).json({ message: "Category not found." });
     }
 
     // Update the category's properties based on the request body
-    categoryData.category_name = req.body.category_name;
+    updatedCategory.category_name = req.body.category_name;
 
     // Save the updated category data using Sequelize '.save()' method
-    await categoryData.save();
+    await updatedCategory.save();
 
     // Send a response indicating success
-    res
-      .status(200)
-      .json({ message: "Category updated successfully.", data: categoryData });
+    res.status(200).json({
+      message: "Category updated successfully.",
+      data: updatedCategory,
+    });
   } catch (err) {
     // Send error details if an error occurred
     res.status(500).json({ message: "Failed to update category.", error: err });
@@ -95,23 +96,24 @@ router.delete("/:id", async (req, res) => {
   // Delete a category by its `id` value
   try {
     // Use Sequelize's '.destroy()' method to delete the category
-    const categoryData = await Category.destroy({
+    const deletedCategory = await Category.destroy({
       where: {
         id: req.params.id,
       },
     });
 
     // Check if a category with the given id was found and deleted
-    if (!categoryData) {
+    if (!deletedCategory) {
       return res
         .status(404)
         .json({ message: "No category found with this id." });
     }
 
     // Respond with a success message and the deleted category data
-    res
-      .status(200)
-      .json({ message: "Category deleted successfully.", data: categoryData });
+    res.status(200).json({
+      message: "Category deleted successfully.",
+      data: deletedCategory,
+    });
   } catch (err) {
     // Send error details if an error occurred
     res.status(500).json({ message: "Failed to delete category.", error: err });
