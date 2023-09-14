@@ -115,7 +115,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   // Delete one product by its `id` value
   try {
-    // Use Sequelize's '.destroy()' method to delete the product
+    // Use Sequelize '.destroy()' method to delete the product
     const deletedProduct = await Product.destroy({
       where: {
         id: req.params.id,
