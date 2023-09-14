@@ -19,9 +19,19 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", (req, res) => {
-  // find one category by its `id` value
-  // be sure to include its associated Products
+// Listens for GET requests to retrieve a single category by its `id` value
+router.get("/:id", async (req, res) => {
+  try {
+    // Use 'Category.findByPk()' method to find a category by its primary key (id)
+    const categoryData = await Category.findByPk(req.params.id, {
+      include: [{ model: Product }],
+    });
+    // Send the retrieved category data if successful
+    res.status(200).json(categoryData);
+  } catch (err) {
+    // Send error details if error occurred
+    res.status(500).json(err);
+  }
 });
 
 router.post("/", (req, res) => {
