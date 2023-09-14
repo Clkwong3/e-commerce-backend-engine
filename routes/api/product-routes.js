@@ -92,48 +92,58 @@ router.post("/", async (req, res) => {
   }
 });
 
-// update product
-router.put("/:id", (req, res) => {
-  // update product data
-  Product.update(req.body, {
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((product) => {
-      if (req.body.tagIds && req.body.tagIds.length) {
-        ProductTag.findAll({
-          where: { product_id: req.params.id },
-        }).then((productTags) => {
-          // create filtered list of new tag_ids
-          const productTagIds = productTags.map(({ tag_id }) => tag_id);
-          const newProductTags = req.body.tagIds
-            .filter((tag_id) => !productTagIds.includes(tag_id))
-            .map((tag_id) => {
-              return {
-                product_id: req.params.id,
-                tag_id,
-              };
-            });
-
-          // figure out which ones to remove
-          const productTagsToRemove = productTags
-            .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
-            .map(({ id }) => id);
-          // run both actions
-          return Promise.all([
-            ProductTag.destroy({ where: { id: productTagsToRemove } }),
-            ProductTag.bulkCreate(newProductTags),
-          ]);
-        });
-      }
-
-      return res.json(product);
-    })
-    .catch((err) => {
-      // console.log(err);
-      res.status(400).json(err);
+// Listen for PUT requests to update a product
+router.put("/:id", async (req, res) => {
+  try {
+    // Update product data
+    const [rowsUpdated, [updatedProduct]] = await Product.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+      returning: true, // Return the updated product
     });
+    // '[rowsUpdated, [updatedProduct]]' Code Break Down
+    // 'rowsUpdated' - Shows how many records in the 'Product' table were affected by the update in the database
+    // '[updatedProduct]' - Array containing the updated product data
+    // 'returning: true' - Sequelize method to return the updated records as an array
+
+    if (req.body.tagIds && req.body.tagIds.length) {
+      // Get all existing 'ProductTag' records for a specific product
+      const productTags = await ProductTag.findAll({
+        where: { product_id: req.params.id },
+      });
+
+      // Create a list of 'productTagsIds' that contains the 'tag_id' values from the 'productTags' array
+      const productTagIds = productTags.map(({ tag_id }) => tag_id);
+
+      // Create a list of 'newProductTags'
+      // Filter the 'tagIds' to find new tags that are not in 'productTagIds'
+      const newProductTags = req.body.tagIds
+        .filter((tag_id) => !productTagIds.includes(tag_id))
+        .map((tag_id) => ({
+          product_id: req.params.id,
+          tag_id,
+        }));
+
+      // Create a list of 'productTagsToRemove'
+      // Filter 'productTags' to find tags to remove
+      const productTagsToRemove = productTags
+        .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
+        .map(({ id }) => id);
+
+      // Use Promise.all to run 2 operations in parallel for efficiency, one to remove and one to add
+      // Remove the product tags found in 'productTagsToRemove'
+      await ProductTag.destroy({ where: { id: productTagsToRemove } });
+
+      // Create new product tags from 'newProductTags' that don't exist yet
+      await ProductTag.bulkCreate(newProductTags);
+    }
+
+    // Send a response indicating success
+    res.json(updatedProduct);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 });
 
 router.delete("/:id", (req, res) => {
