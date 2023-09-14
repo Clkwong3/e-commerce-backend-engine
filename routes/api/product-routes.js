@@ -52,43 +52,32 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     // Create a new product using 'Product.create()' method
-    const product = await Product.create(req.body);
+    const newProduct = await Product.create(req.body);
 
-    // If there are product tags, create pairings to bulk create in the 'ProductTag' model
     if (req.body.tagIds.length) {
-      const productTagIdArr = req.body.tagIds.map((tag_id) => ({
-        product_id: product.id,
+      // Create product-tag associations if there are product tags
+      const productTagPairs = req.body.tagIds.map((tag_id) => ({
+        product_id: newProduct.id,
         tag_id,
       }));
-      // 'const productTagIdArr ' Code Break Down:
-      // 'productTagIdArr' - A pairing between 1 product and 1 tag is represented in each object in this array
-      // 'req.body.tagIds' - Each 'tagIds' from the 'req.body' object represents a tag associated with a product
-      // '.map((tag_id)=> {})' - Use the '.map()' method to go through each 'tag_id' in the array and transforms it into an object with properties 'product_id' and 'tag_id'.
-      // Each objects has 2 properties:
-      //    'product_id' - ID of the newly created product
-      //    'tag_id' - ID of the tag associated with with product
-      // 'product_id: product.id' - Set the 'product_id' of the object to the 'id' of the newly created product
-      // 'tag_id' - Set the 'tag_id' of the object to the current 'tag_id' being repeated
 
-      // Create the product-tag associations
-      await ProductTag.bulkCreate(productTagIdArr);
-      // 'ProductTag.bulkCreate' Code Break Down:
-      // 'ProductTag' - Represent 'ProductTag' table in database
-      // '.bulkCreate' - Sequelize method that inserts multiple records(rows) into the database all at once
-      // 'productTagIdArr' - Array of objects that reprsents a pairing between a product and tag with 'product_id' and 'tag_id' properties
+      // Bulk insert product-tag associations into the 'ProductTag' model
+      await ProductTag.bulkCreate(productTagPairs);
 
-      // Send the newly created 'productTagIds'
+      // Respond with the newly created 'productTagPairs'
       res.status(200).json({
         message: "Product Tag created successfully.",
-        data: productTagIdArr,
+        data: productTagPairs,
       });
     } else {
       // If no product tags, respond with the created product
-      res.status(200).json(product);
+      res.status(200).json(newProduct);
     }
   } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: "Failed to create product.", error: err });
+    // Send error details if an error occurred
+    res
+      .status(400)
+      .json({ message: "Failed to create the product.", error: err });
   }
 });
 
@@ -111,12 +100,14 @@ router.put("/:id", async (req, res) => {
         updatedProduct: updatedProduct, // Include the updated product data in the response
       });
     } else {
-      // No rows were updated (product with the specified ID not found)
+      // If the product isn't found, return a 404 error
       res.status(404).json({ message: "Product not found." });
     }
   } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: "Failed to update product.", error: err });
+    // Send error details if an error occurred
+    res
+      .status(400)
+      .json({ message: "Failed to update the product.", error: err });
   }
 });
 
@@ -141,10 +132,12 @@ router.delete("/:id", async (req, res) => {
     // Respond with a success message and the deleted product data
     res
       .status(200)
-      .json({ message: "product deleted successfully.", data: deletedProduct });
+      .json({ message: "Product deleted successfully.", data: deletedProduct });
   } catch (err) {
     // Send error details if an error occurred
-    res.status(500).json({ message: "Failed to delete product.", error: err });
+    res
+      .status(500)
+      .json({ message: "Failed to delete the product.", error: err });
   }
 });
 
