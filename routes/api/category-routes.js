@@ -2,6 +2,8 @@
 const router = require("express").Router();
 const { Category, Product } = require("../../models");
 
+// The `/api/categories` endpoint
+
 // Listens for GET requests to retrieve all categories
 router.get("/", async (req, res) => {
   try {
