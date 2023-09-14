@@ -8,14 +8,14 @@ const { Tag, Product, ProductTag } = require("../../models");
 router.get("/", async (req, res) => {
   try {
     // Use 'Tag.findAll()' method to find all tags
-    // Include associated Product and ProductTag data in the response
+    // Include associated 'Product' and 'ProductTag' data in the response
     const tagData = await Tag.findAll({
       include: [{ model: Product }, { model: ProductTag }],
     });
 
     // Send retrieved tag data if successful
     res.status(200).json({
-      message: "Tags retrieved successfully.",
+      message: "Tag retrieved successfully.",
       data: tagData,
     });
   } catch (err) {
@@ -24,9 +24,26 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", (req, res) => {
-  // find a single tag by its `id`
-  // be sure to include its associated Product data
+// Listen for GET requests to retrieve one tag by its 'id'
+router.get("/:id", async (req, res) => {
+  try {
+    // Use 'Product.findByPk()' method to find a product by its primary key (id)
+    // Include the associated 'Product' data in the response
+    const productData = await Product.findByPk(req.params.id, {
+      include: [{ model: Product }],
+    });
+
+    // Send the retrieved product data if successful
+    res.status(200).json({
+      message: "Product retrieved successfully.",
+      data: productData,
+    });
+  } catch (err) {
+    // Send error details if an error occurred
+    res
+      .status(500)
+      .json({ message: "Failed to retrieve the tag.", error: err });
+  }
 });
 
 router.post("/", (req, res) => {
