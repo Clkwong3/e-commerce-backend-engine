@@ -7,7 +7,7 @@ const { Product, Category, Tag, ProductTag } = require("../../models");
 // GET all products
 router.get("/", async (req, res) => {
   try {
-    // Use 'Product.findAll()' method to find all products with associated Category and Tag data
+    // Retrieve all products with associated Category and Tag data
     const productData = await Product.findAll({
       include: [{ model: Category }, { model: Tag, as: "tags" }],
     });
@@ -18,17 +18,16 @@ router.get("/", async (req, res) => {
       data: productData,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(500)
-      .json({ message: "Failed to retrieve products.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while retrieving products:", err);
+    res.status(500).json({ message: "Failed to retrieve products." });
   }
 });
 
 // GET one product by ID
 router.get("/:id", async (req, res) => {
   try {
-    // Use 'Product.findByPk()' method to find a product by its primary key (id) with associated Category and Tag data
+    // Retrieve a product by its primary key (id) with associated Category and Tag data
     const productData = await Product.findByPk(req.params.id, {
       include: [{ model: Category }, { model: Tag, as: "tags" }],
     });
@@ -39,11 +38,9 @@ router.get("/:id", async (req, res) => {
       data: productData,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(500)
-      .json({ message: "Failed to retrieve the product.", error: err });
-    console.log(err);
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while retrieving the product:", err);
+    res.status(500).json({ message: "Failed to retrieve the product." });
   }
 });
 
@@ -73,10 +70,9 @@ router.post("/", async (req, res) => {
       res.status(200).json(newProduct);
     }
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(400)
-      .json({ message: "Failed to create the product.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while creating the product:", err);
+    res.status(400).json({ message: "Failed to create the product." });
   }
 });
 
@@ -102,10 +98,9 @@ router.put("/:id", async (req, res) => {
       res.status(404).json({ message: "Product not found." });
     }
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(400)
-      .json({ message: "Failed to update the product.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while updating the product:", err);
+    res.status(400).json({ message: "Failed to update the product." });
   }
 });
 
@@ -121,9 +116,7 @@ router.delete("/:id", async (req, res) => {
 
     if (!deletedProduct) {
       // Check if a product with the given id was found and deleted
-      return res
-        .status(404)
-        .json({ message: "No product found with this id." });
+      res.status(404).json({ message: "No product found with this id." });
     }
 
     // Respond with a success message and the deleted product data
@@ -132,10 +125,9 @@ router.delete("/:id", async (req, res) => {
       data: deletedProduct,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(500)
-      .json({ message: "Failed to delete the product.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while deleting the product:", err);
+    res.status(500).json({ message: "Failed to delete the product." });
   }
 });
 
