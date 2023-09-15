@@ -88,8 +88,30 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
-  // delete on tag by its `id` value
+// DELETE a tag by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    // Use Sequelize '.destroy()' method to delete the tag
+    const deletedTag = await Tag.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (!deletedTag) {
+      // Resource not found
+      return res.status(404).json({ message: "No tag found with this id." });
+    }
+
+    // Success: tag deleted
+    res.status(200).json({
+      message: "Tag deleted successfully.",
+      data: deletedTag,
+    });
+  } catch (err) {
+    // Server error
+    res.status(500).json({ message: "Failed to delete the tag.", error: err });
+  }
 });
 
 module.exports = router;
