@@ -53,7 +53,7 @@ router.post("/", async (req, res) => {
     const newTag = await Tag.create(req.body);
 
     // Send a success response with the newly created tag
-    res.status(201).json({
+    res.status(200).json({
       message: "Tag created successfully.",
       data: newTag,
     });
@@ -63,8 +63,29 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
-  // update a tag's name by its `id` value
+// PUT (update) a tag by ID
+router.put("/:id", async (req, res) => {
+  // Update a tag's name by its `id` value
+  try {
+    // Find the category using the primary key (id)
+    const updatedTag = await Tag.findByPk(req.params.id);
+
+    // If the tag doesn't exist, return a 404 error
+    if (!updatedTag) {
+      return res.status(404).json({ message: "Tag not found." });
+    } else {
+      // Update the tag's name with the new value from req.body
+      await updatedTag.update(req.body);
+
+      // Send response indicating success and include the updated tag data
+      res
+        .status(200)
+        .json({ message: "Tag updated successfully.", updatedTag });
+    }
+  } catch (err) {
+    // Send error details if an error occurred
+    res.status(400).json({ message: "Failed to update the tag.", error: err });
+  }
 });
 
 router.delete("/:id", (req, res) => {
