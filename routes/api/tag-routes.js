@@ -10,12 +10,12 @@ router.get("/", async (req, res) => {
     // Use 'Tag.findAll()' method to find all tags
     // Include associated 'Product' and 'ProductTag' data in the response
     const tagData = await Tag.findAll({
-      include: [{ model: Product }, { model: ProductTag }],
+      include: [{ model: Product, as: "products", through: ProductTag }],
     });
 
     // Send retrieved tag data if successful
     res.status(200).json({
-      message: "Tag retrieved successfully.",
+      message: "Tags retrieved successfully.",
       data: tagData,
     });
   } catch (err) {
@@ -27,16 +27,16 @@ router.get("/", async (req, res) => {
 // Listen for GET requests to retrieve one tag by its 'id'
 router.get("/:id", async (req, res) => {
   try {
-    // Use 'Product.findByPk()' method to find a product by its primary key (id)
+    // Use 'Tag.findByPk()' method to find a tag by its primary key (id)
     // Include the associated 'Product' data in the response
-    const productData = await Product.findByPk(req.params.id, {
-      include: [{ model: Product }],
+    const tagData = await Tag.findByPk(req.params.id, {
+      include: [{ model: Product, as: "products", through: ProductTag }],
     });
 
-    // Send the retrieved product data if successful
+    // Send the retrieved tag data if successful
     res.status(200).json({
-      message: "Product retrieved successfully.",
-      data: productData,
+      message: "Tag retrieved successfully.",
+      data: tagData,
     });
   } catch (err) {
     // Send error details if an error occurred
@@ -45,7 +45,6 @@ router.get("/:id", async (req, res) => {
       .json({ message: "Failed to retrieve the tag.", error: err });
   }
 });
-
 router.post("/", (req, res) => {
   // create a new tag
 });

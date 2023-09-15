@@ -1,4 +1,4 @@
-// Import Router and models
+// Import necessary modules
 const router = require("express").Router();
 const { Product, Category, Tag, ProductTag } = require("../../models");
 
@@ -7,10 +7,9 @@ const { Product, Category, Tag, ProductTag } = require("../../models");
 // Listen for GET requests to retrieve all products
 router.get("/", async (req, res) => {
   try {
-    // Use 'Product.findAll()' method to find all products
-    // Separate each model inside the 'include' array by enclosing them in their own object.
+    // Use 'Product.findAll()' method to find all products with associated Category and Tag data
     const productData = await Product.findAll({
-      include: [{ model: Category }, { model: Tag }],
+      include: [{ model: Category }, { model: Tag, as: "tags" }],
     });
 
     // Send retrieved product data if successful
@@ -26,13 +25,12 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Listen for GET requests to retrieve one product by its 'id'
+// GET one product by ID
 router.get("/:id", async (req, res) => {
   try {
-    // Use 'Product.findByPk()' method to find a product by its primary key (id)
-    // Include the associated 'Category' and 'Tag' data in the response
+    // Use 'Product.findByPk()' method to find a product by its primary key (id) with associated Category and Tag data
     const productData = await Product.findByPk(req.params.id, {
-      include: [{ model: Category }, { model: Tag }],
+      include: [{ model: Category }, { model: Tag, as: "tags" }],
     });
 
     // Send the retrieved product data if successful
@@ -45,10 +43,11 @@ router.get("/:id", async (req, res) => {
     res
       .status(500)
       .json({ message: "Failed to retrieve the product.", error: err });
+    console.log(err);
   }
 });
 
-// Listen for POST requests to create a new product
+// POST a new product
 router.post("/", async (req, res) => {
   try {
     // Create a new product using 'Product.create()' method
@@ -81,7 +80,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Listen for PUT requests to update a product
+// PUT (update) a product by ID
 router.put("/:id", async (req, res) => {
   try {
     // Update product data using Sequelize
@@ -92,12 +91,11 @@ router.put("/:id", async (req, res) => {
       returning: true, // This option returns the updated record(s)
     });
 
-    // Check the outcome of the product update operation
     if (rowsUpdated > 0) {
       // Rows were updated successfully
       res.status(200).json({
         message: "Product updated successfully.",
-        updatedProduct: updatedProduct, // Include the updated product data in the response
+        updatedProduct, // Include the updated product data in the response
       });
     } else {
       // If the product isn't found, return a 404 error
@@ -111,9 +109,8 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// Listen for DELETE request to the endpoint by its `id` value
+// DELETE a product by ID
 router.delete("/:id", async (req, res) => {
-  // Delete one product by its `id` value
   try {
     // Use Sequelize '.destroy()' method to delete the product
     const deletedProduct = await Product.destroy({
@@ -122,17 +119,18 @@ router.delete("/:id", async (req, res) => {
       },
     });
 
-    // Check if a product with the given id was found and deleted
     if (!deletedProduct) {
+      // Check if a product with the given id was found and deleted
       return res
         .status(404)
         .json({ message: "No product found with this id." });
     }
 
     // Respond with a success message and the deleted product data
-    res
-      .status(200)
-      .json({ message: "Product deleted successfully.", data: deletedProduct });
+    res.status(200).json({
+      message: "Product deleted successfully.",
+      data: deletedProduct,
+    });
   } catch (err) {
     // Send error details if an error occurred
     res

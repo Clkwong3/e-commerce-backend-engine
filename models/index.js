@@ -9,29 +9,29 @@ const ProductTag = require("./ProductTag");
 // 'Product' belongs to 'Category'
 // Each 'Product' belongs to a single 'Category'.
 Product.belongsTo(Category, {
-  foreignKey: `category_id`,
+  foreignKey: "category_id",
 });
 
 // 'Category' has many 'Products'
 // A single 'Category' can be associated with many 'Products' because of the 'category_id' foreign key in the 'Product' Model.
 Category.hasMany(Product, {
-  foreignKey: `category_id`,
+  foreignKey: "category_id",
 });
 
 // 'Product' belongToMany 'Tag' (through 'ProductTag')
 // Establish a many-to-many relationship between 'Product' and 'Tag' models using the 'ProductTag' model as the bridge.
 Product.belongsToMany(Tag, {
   through: ProductTag,
-  foreignKey: `product_id`,
-  as: `tags`,
+  foreignKey: "product_id",
+  as: "tags", // This is the alias for the 'Tag' association
 });
 
 // 'Tags' belongToMany 'Products' (through 'ProductTag')
 // Establish a many-to-many relationship between 'Tag' and 'Product' models using the 'ProductTag' model as the bridge.
 Tag.belongsToMany(Product, {
   through: ProductTag,
-  foreignKey: `tag_id`,
-  as: `products`,
+  foreignKey: "tag_id",
+  as: "products", // This is the alias for the 'Product' association
 });
 
 // Export the 'index' model
