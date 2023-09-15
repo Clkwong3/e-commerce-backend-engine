@@ -4,7 +4,7 @@ const { Tag, Product, ProductTag } = require("../../models");
 
 // The `/api/tags` endpoint
 
-// Listen for GET requests to retrieve all the tags
+// GET all the tags
 router.get("/", async (req, res) => {
   try {
     // Use 'Tag.findAll()' method to find all tags
@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Listen for GET requests to retrieve one tag by its 'id'
+// GET one tag by ID
 router.get("/:id", async (req, res) => {
   try {
     // Use 'Tag.findByPk()' method to find a tag by its primary key (id)
@@ -45,8 +45,22 @@ router.get("/:id", async (req, res) => {
       .json({ message: "Failed to retrieve the tag.", error: err });
   }
 });
-router.post("/", (req, res) => {
-  // create a new tag
+
+// POST a new tag
+router.post("/", async (req, res) => {
+  try {
+    // Create a new tag using 'Tag.create()' method
+    const newTag = await Tag.create(req.body);
+
+    // Send a success response with the newly created tag
+    res.status(201).json({
+      message: "Tag created successfully.",
+      data: newTag,
+    });
+  } catch (err) {
+    // Send error details if an error occurred
+    res.status(400).json({ message: "Failed to create the tag.", error: err });
+  }
 });
 
 router.put("/:id", (req, res) => {
