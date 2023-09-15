@@ -7,9 +7,9 @@ const { Category, Product } = require("../../models");
 // GET all categories
 router.get("/", async (req, res) => {
   try {
-    // Use 'Category.findAll()' method to find all categories
+    // Retrieve all categories with associated products
     const categoryData = await Category.findAll({
-      include: [{ model: Product }], // Include associated products in each category
+      include: [{ model: Product }],
     });
 
     // Send retrieved category data if successful
@@ -18,17 +18,16 @@ router.get("/", async (req, res) => {
       data: categoryData,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(500)
-      .json({ message: "Failed to retrieve categories.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while retrieving categories:", err);
+    res.status(500).json({ message: "Failed to retrieve categories." });
   }
 });
 
 // GET one category by ID
 router.get("/:id", async (req, res) => {
   try {
-    // Use 'Category.findByPk()' method to find a category by its primary key (id)
+    // Retrieve a category by its primary key (id) with associated products
     const categoryData = await Category.findByPk(req.params.id, {
       include: [{ model: Product }],
     });
@@ -39,10 +38,9 @@ router.get("/:id", async (req, res) => {
       data: categoryData,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res
-      .status(500)
-      .json({ message: "Failed to retrieve category.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while retrieving the category:", err);
+    res.status(500).json({ message: "Failed to retrieve category." });
   }
 });
 
@@ -57,8 +55,9 @@ router.post("/", async (req, res) => {
       .status(201)
       .json({ message: "Category created successfully.", data: newCategory });
   } catch (err) {
-    // Send error details if an error occurred
-    res.status(500).json({ message: "Failed to create category.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while creating the category:", err);
+    res.status(500).json({ message: "Failed to create category." });
   }
 });
 
@@ -86,8 +85,9 @@ router.put("/:id", async (req, res) => {
       data: updatedCategory,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res.status(500).json({ message: "Failed to update category.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while updating the category:", err);
+    res.status(500).json({ message: "Failed to update category." });
   }
 });
 
@@ -115,8 +115,9 @@ router.delete("/:id", async (req, res) => {
       data: deletedCategory,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res.status(500).json({ message: "Failed to delete category.", error: err });
+    // Log and send an error message if an error occurred
+    console.error("Error occurred while deleting the category:", err);
+    res.status(500).json({ message: "Failed to delete category." });
   }
 });
 
