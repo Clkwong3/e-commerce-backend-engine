@@ -1,6 +1,7 @@
 // Import necessary modules
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection.js");
+const Category = require("./Category");
 
 // Initialize 'Product' model (table) by extending off Sequelize's Model class
 class Product extends Model {}
@@ -50,6 +51,7 @@ Product.init(
     // Category where the product belongs to
     category_id: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: "category", // Referring to the 'Category' model
         key: "id", // Referring to the 'id' column in the 'Category' model

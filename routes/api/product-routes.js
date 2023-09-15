@@ -60,10 +60,18 @@ router.post("/", async (req, res) => {
       // Bulk insert product-tag associations into the 'ProductTag' model
       await ProductTag.bulkCreate(productTagPairs);
 
+      // Fetch the associated tags for the newly created product
+      const associatedTags = await Tag.findAll({
+        where: {
+          id: req.body.tagIds, // Array of tag IDs from the request body
+        },
+      });
+
       // Respond with the newly created 'productTagPairs'
       res.status(200).json({
-        message: "Product Tag created successfully.",
+        message: "Product Tag created successfully with tags.",
         data: productTagPairs,
+        tags: associatedTags,
       });
     } else {
       // If no product tags, respond with the created product
@@ -79,26 +87,31 @@ router.post("/", async (req, res) => {
 // PUT (update) a product by ID
 router.put("/:id", async (req, res) => {
   try {
-    // Update product data using Sequelize
-    const [rowsUpdated, [updatedProduct]] = await Product.update(req.body, {
-      where: {
-        id: req.params.id,
-      },
-      returning: true, // This option returns the updated record(s)
-    });
+    const { tagIds } = req.body;
 
-    if (rowsUpdated > 0) {
-      // Rows were updated successfully
-      res.status(200).json({
-        message: "Product updated successfully.",
-        updatedProduct, // Include the updated product data in the response
-      });
-    } else {
-      // If the product isn't found, return a 404 error
-      res.status(404).json({ message: "Product not found." });
+    // Find the product you want to update
+    const updatedProduct = await Product.findByPk(req.params.id);
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found." });
     }
+
+    // Update the product's fields (e.g., product_name, price, stock) here if needed
+    updatedProduct.product_name = req.body.product_name;
+    updatedProduct.price = req.body.price;
+    updatedProduct.stock = req.body.stock;
+
+    // Use the setTags method to update the product's tags
+    await updatedProduct.setTags(tagIds);
+
+    // Save the changes to the product
+    await updatedProduct.save();
+
+    res.status(200).json({
+      message: "Product updated successfully.",
+      data: updatedProduct,
+    });
   } catch (err) {
-    // Log and send an error message if an error occurred
     console.error("Error occurred while updating the product:", err);
     res.status(400).json({ message: "Failed to update the product." });
   }
