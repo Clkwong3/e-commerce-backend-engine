@@ -19,8 +19,13 @@ router.get("/", async (req, res) => {
       data: tagData,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res.status(500).json({ message: "Failed to retrieve tags.", error: err });
+    // Log detailed error for developers
+    console.error("Error occurred while retrieving tags:", err);
+
+    // Send a generic error message to users
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving tags." });
   }
 });
 
@@ -39,10 +44,13 @@ router.get("/:id", async (req, res) => {
       data: tagData,
     });
   } catch (err) {
-    // Send error details if an error occurred
+    // Log detailed error for developers
+    console.error("Error occurred while retrieving the tag:", err);
+
+    // Send a generic error message to users
     res
       .status(500)
-      .json({ message: "Failed to retrieve the tag.", error: err });
+      .json({ message: "An error occurred while retrieving the tag." });
   }
 });
 
@@ -58,33 +66,43 @@ router.post("/", async (req, res) => {
       data: newTag,
     });
   } catch (err) {
-    // Send error details if an error occurred
-    res.status(400).json({ message: "Failed to create the tag.", error: err });
+    // Log detailed error for developers
+    console.error("Error occurred while creating the tag:", err);
+
+    // Send a generic error message to users
+    res
+      .status(500)
+      .json({ message: "An error occurred while creating the tag." });
   }
 });
 
 // PUT (update) a tag by ID
 router.put("/:id", async (req, res) => {
-  // Update a tag's name by its `id` value
   try {
-    // Find the category using the primary key (id)
+    // Find the tag using the primary key (id)
     const updatedTag = await Tag.findByPk(req.params.id);
 
     // If the tag doesn't exist, return a 404 error
     if (!updatedTag) {
       return res.status(404).json({ message: "Tag not found." });
-    } else {
-      // Update the tag's name with the new value from req.body
-      await updatedTag.update(req.body);
-
-      // Send response indicating success and include the updated tag data
-      res
-        .status(200)
-        .json({ message: "Tag updated successfully.", updatedTag });
     }
+
+    // Update the tag's name with the new value from req.body
+    await updatedTag.update(req.body);
+
+    // Send response indicating success and include the updated tag data
+    res.status(200).json({
+      message: "Tag updated successfully.",
+      data: updatedTag,
+    });
   } catch (err) {
-    // Send error details if an error occurred
-    res.status(400).json({ message: "Failed to update the tag.", error: err });
+    // Log detailed error for developers
+    console.error("Error occurred while updating the tag:", err);
+
+    // Send a generic error message to users
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the tag." });
   }
 });
 
@@ -109,8 +127,13 @@ router.delete("/:id", async (req, res) => {
       data: deletedTag,
     });
   } catch (err) {
-    // Server error
-    res.status(500).json({ message: "Failed to delete the tag.", error: err });
+    // Log detailed error for developers
+    console.error("Error occurred while deleting the tag:", err);
+
+    // Send a generic error message to users
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the tag." });
   }
 });
 
