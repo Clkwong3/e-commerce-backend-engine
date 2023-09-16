@@ -139,7 +139,7 @@ All rights reserved. Licensed under the MIT license.
 
 Here is the Walkthrough Video for this project:
 
-- Walkthrough Video: [screencastify](example.com)
+- Walkthrough Video: [screencastify](https://drive.google.com/file/d/15xJOtP-er8NL6gbstrmgQN_hmgHcN1So/view)
 
 ## Contact Me
 
