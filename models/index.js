@@ -16,6 +16,7 @@ Product.belongsTo(Category, {
 // A single 'Category' can be associated with many 'Products' because of the 'category_id' foreign key in the 'Product' Model.
 Category.hasMany(Product, {
   foreignKey: "category_id",
+  onDelete: "CASCADE", // When a category is deleted, associated products are deleted.
 });
 
 // 'Product' belongToMany 'Tag' (through 'ProductTag')
@@ -24,6 +25,7 @@ Product.belongsToMany(Tag, {
   through: ProductTag,
   foreignKey: "product_id",
   as: "tags", // This is the alias for the 'Tag' association
+  onDelete: "CASCADE", // When a product is deleted, associated product-tag relationships are deleted.
 });
 
 // 'Tags' belongToMany 'Products' (through 'ProductTag')

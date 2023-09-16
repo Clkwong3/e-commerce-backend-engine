@@ -94,13 +94,13 @@ E-Commerce Backend empowers you to efficiently manage and organize products for 
 
 8. **Exit the Application:** To stop the application, press Ctrl + C (or Cmd + C on macOS) in the terminal where the application is running.
 
-   ### Please remember to replace the placeholders in the .env file with the actual database credentials.
+   ### Please remember to put actual database credentials in the .env file.
 
 ## Testing
 
-To test the application using Insomnia, perform various HTTP requests (e.g., GET, POST, PUT, DELETE) to interact with the API endpoints.
+To test the application, perform various HTTP requests (e.g., GET, POST, PUT, DELETE) to interact with the API endpoints.
 
-Follow these steps to test in Insomnia:
+Follow these steps to test in <u>Insomnia</u>:
 
 1. **Open Insomnia:** Launch the Insomnia application on your computer.
 
@@ -117,19 +117,19 @@ Follow these steps to test in Insomnia:
    - "PUT" - To update existing data
    - "DELETE' - To remove data
 
-6. **Enter the Request URL:** In the URL field, enter the full URL of the API endpoint to test. This should include http:// or https:// and the specific route.
+6. **Enter the Request URL:** In the URL field, enter the full URL of the API endpoint to test. This should include 'http://' or 'https://' and the specific route.
 
 7. **Set Request Body (For POST and PUT Requests):** If the request type is POST or PUT and requires a request body (e.g., JSON data), switch to the "Body" tab and choose the format (e.g., JSON) and enter the request body data in the editor.
 
-8. **Send the Request:** Click the "Send" button to execute the request.I nsomnia will send the request to the API endpoint.
+8. **Send the Request:** Click the "Send" button to execute the request. Insomnia will send the request to the API endpoint.
 
-9. /88 After sending the request, receive a response from the server. Insomnia will display the response headers, status code, and response body. Review the response body to make sure the API is behaving as expected.
+9. **View the Response** After sending the request, receive a response from the server. Insomnia will display the response headers, status code, and response body. Review the response body to make sure the API is behaving as expected.
 
-10. **Inspect and Debug:** Inspect the response data to verify that the API endpoints are working correctly. The data can also be used 0for debugging and troubleshooting.
+10. **Inspect and Debug:** Inspect the response data to verify that the API endpoints are working correctly. The data can also be used for debugging and troubleshooting.
 
 11. **Repeat for Other Endpoints:** Create additional requests in Insomnia to test different API endpoints or perform various actions.
 
-12. **Save the Workspace (Optional):** Save the workspace in Insomnia to keep a record of the requests and responses for future testing.
+12. **Save the Workspace (Optional):** Save the workspace in Insomnia to keep a record of the requests and responses for future testing and debugging purposes.
 
 ## License
 
