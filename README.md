@@ -137,6 +137,10 @@ All rights reserved. Licensed under the MIT license.
 
 ## Link
 
+Here is the Starter Code for this project:
+
+- Starter Code: [fantastic-umbrella](https://github.com/coding-boot-camp/fantastic-umbrella)
+
 Here is the Walkthrough Video for this project:
 
 - Walkthrough Video: [screencastify](https://drive.google.com/file/d/15xJOtP-er8NL6gbstrmgQN_hmgHcN1So/view)
