@@ -1,4 +1,4 @@
-# e-commerce-backend-engine
+# retail-engine
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
