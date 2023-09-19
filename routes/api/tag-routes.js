@@ -79,30 +79,26 @@ router.post("/", async (req, res) => {
 // PUT (update) a tag by ID
 router.put("/:id", async (req, res) => {
   try {
-    // Find the tag using the primary key (id)
-    const updatedTag = await Tag.findByPk(req.params.id);
+    // Extract the updated tag data from the request body
+    const updatedTagData = req.body;
 
-    // If the tag doesn't exist, return a 404 error
-    if (!updatedTag) {
-      return res.status(404).json({ message: "Tag not found." });
-    }
-
-    // Update the tag's name with the new value from req.body
-    await updatedTag.update(req.body);
-
-    // Send response indicating success and include the updated tag data
-    res.status(200).json({
-      message: "Tag updated successfully.",
-      data: updatedTag,
+    // Update the tag by its ID
+    const [updatedRows] = await Tag.update(updatedTagData, {
+      where: { id: req.params.id },
     });
-  } catch (err) {
-    // Log detailed error for developers
-    console.error("Error occurred while updating the tag:", err);
 
-    // Send a generic error message to users
-    res
-      .status(500)
-      .json({ message: "An error occurred while updating the tag." });
+    return updatedRows > 0
+      ? // If at least one row was updated, it means the tag was found and updated
+        res.status(200).json({
+          message: "Tag updated successfully.",
+          data: updatedTagData,
+        })
+      : // If no rows were updated, the tag was not found
+        res.status(404).json({ message: "Tag not found." });
+  } catch (err) {
+    // Handle errors and send an error response
+    console.error("Error occurred while updating the tag:", err);
+    res.status(500).json({ message: "Failed to update the tag." });
   }
 });
 

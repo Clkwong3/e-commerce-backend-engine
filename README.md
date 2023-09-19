@@ -143,7 +143,7 @@ Here is the Starter Code for this project:
 
 Here is the Walkthrough Video for this project:
 
-- Walkthrough Video: [screencastify](https://drive.google.com/file/d/15xJOtP-er8NL6gbstrmgQN_hmgHcN1So/view)
+- Walkthrough Video: [screencastify](https://drive.google.com/file/d/1s-K1T76Zz2rdk2QHWmkWpq_RkhPkTlzA/view)
 
 ## Contact Me
 

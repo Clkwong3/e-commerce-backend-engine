@@ -63,29 +63,25 @@ router.post("/", async (req, res) => {
 
 // PUT (update) a category by ID
 router.put("/:id", async (req, res) => {
-  // Update a category by its `id` value
+  // Extract the updated category data using the request parameter id
   try {
-    // Find the category by its primary key (id)
-    const updatedCategory = await Category.findByPk(req.params.id);
+    // Use Sequelize's Category.update method to update a category's data
+    const updatedCategory = await Category.update(
+      { category_name: req.body.category_name }, // New category_name value from req.body
+      { where: { id: req.params.id } } // Identify the category to update by its ID
+    );
 
-    // If the category doesn't exist, return a 404 error
-    if (!updatedCategory) {
-      return res.status(404).json({ message: "Category not found." });
-    }
-
-    // Update the category's properties based on the request body
-    updatedCategory.category_name = req.body.category_name;
-
-    // Save the updated category data using Sequelize '.save()' method
-    await updatedCategory.save();
-
-    // Send a response indicating success
-    res.status(200).json({
-      message: "Category updated successfully.",
-      data: updatedCategory,
-    });
+    // Check if any categories were updated
+    return updatedCategory > 0
+      ? // If at least one row was updated, it means the category was found and updated
+        res.status(200).json({
+          message: "Category updated successfully.",
+          data: updatedCategory,
+        })
+      : // If no rows were updated, the category was not found
+        res.status(404).json({ message: "Category not found." });
   } catch (err) {
-    // Log and send an error message if an error occurred
+    // Handle errors and send an error response
     console.error("Error occurred while updating the category:", err);
     res.status(500).json({ message: "Failed to update category." });
   }

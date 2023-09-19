@@ -87,31 +87,24 @@ router.post("/", async (req, res) => {
 // PUT (update) a product by ID
 router.put("/:id", async (req, res) => {
   try {
-    const { tagIds } = req.body;
+    // Extract the updated product data from the request body
+    const updatedProduct = req.body;
 
-    // Find the product you want to update
-    const updatedProduct = await Product.findByPk(req.params.id);
-
-    if (!updatedProduct) {
-      return res.status(404).json({ message: "Product not found." });
-    }
-
-    // Update the product's fields (e.g., product_name, price, stock) here if needed
-    updatedProduct.product_name = req.body.product_name;
-    updatedProduct.price = req.body.price;
-    updatedProduct.stock = req.body.stock;
-
-    // Use the setTags method to update the product's tags
-    await updatedProduct.setTags(tagIds);
-
-    // Save the changes to the product
-    await updatedProduct.save();
-
-    res.status(200).json({
-      message: "Product updated successfully.",
-      data: updatedProduct,
+    // Update the product by its ID
+    const [updatedRows] = await Product.update(updatedProduct, {
+      where: { id: req.params.id },
     });
+
+    return updatedRows > 0
+      ? // If at least one row was updated, it means the product was found and updated
+        res.status(200).json({
+          message: "Product updated successfully.",
+          data: updatedProduct,
+        })
+      : // If no rows were updated, the product was not found
+        res.status(404).json({ message: "Product not found." });
   } catch (err) {
+    // Handle errors and send an error response
     console.error("Error occurred while updating the product:", err);
     res.status(400).json({ message: "Failed to update the product." });
   }
